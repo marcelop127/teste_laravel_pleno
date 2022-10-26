@@ -5,21 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Loja extends Model
+class Produto extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'loja_id',
         'nome',
-        'email',
+        'valor',
+        'ativo',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
     ];
-    
-    public function produtos() {
-        return $this->hasMany(Produto::class);
+
+    public function loja() {
+        return $this->belongsTo(Loja::class);
     }
 }

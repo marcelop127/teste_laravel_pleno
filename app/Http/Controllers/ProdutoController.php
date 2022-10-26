@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ValidationException;
-use App\Http\Validations\LojaValidation;
-use App\Models\Loja;
+use App\Http\Validations\ProdutoValidation;
+use App\Models\Produto;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
-class LojaController extends Controller
+class ProdutoController extends Controller
 {
 
     /**
@@ -19,9 +19,9 @@ class LojaController extends Controller
      */
     public function index()
     {
-        $lojas = Loja::paginate(15);
+        $produtos = Produto::paginate(15);
 
-        $retorno = $lojas;
+        $retorno = $produtos;
 
         return $this->response($retorno);
     }
@@ -35,17 +35,19 @@ class LojaController extends Controller
     public function store(Request $request)
     {   
         try {
-            $validation = new LojaValidation($request->all(), $request->method());
+            $validation = new ProdutoValidation($request->all(), $request->method());
             $validation->validate();
 
-            $loja = new Loja();
-            $loja->nome = $request->nome;
-            $loja->email = $request->email;
-            $loja->save();
+            $produto = new Produto();
+            $produto->loja_id =  $request->loja_id;
+            $produto->nome =  $request->nome;
+            $produto->valor =  $request->valor;
+            $produto->ativo =  $request->ativo;
+            $produto->save();
 
             $retorno = [
                 'msg' => 'Objeto salvo com sucesso',
-                'loja' => $loja,
+                'produto' => $produto,
             ];
             
             return $this->response($retorno);
@@ -65,9 +67,9 @@ class LojaController extends Controller
     public function show($id)
     {
         try {
-            $loja = Loja::with('produtos')->findOrFail($id);
+            $produto = Produto::findOrFail($id);
             
-            $retorno = ['loja' => $loja];
+            $retorno = ['produto' => $produto];
             
             return $this->response($retorno);
         } catch (ValidationException $e) {
@@ -89,13 +91,15 @@ class LojaController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $validation = new LojaValidation($request->all(), $request->method(), $id);
+            $validation = new ProdutoValidation($request->all(), $request->method(), $id);
             $validation->validate();
 
-            $loja = Loja::findOrFail($id);
-            $loja->nome = $request->nome;
-            $loja->email = $request->email;
-            $loja->save();
+            $produto = Produto::findOrFail($id);
+            $produto->loja_id =  $request->loja_id;
+            $produto->nome =  $request->nome;
+            $produto->valor =  $request->valor;
+            $produto->ativo =  $request->ativo;
+            $produto->save();
             
             return $this->response(['msg' => 'Objeto salvo com sucesso']);
         } catch (ValidationException $e) {
@@ -116,9 +120,9 @@ class LojaController extends Controller
     public function destroy($id)
     {
         try {
-            $loja = Loja::findOrFail($id);
+            $produto = Produto::findOrFail($id);
 
-            $loja->delete();
+            $produto->delete();
             
             return $this->response(['msg' => 'Objeto deletado com sucesso.']);
         } catch (ModelNotFoundException $e) {
