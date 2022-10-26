@@ -27,6 +27,7 @@ abstract class Validation
     function __construct($fields, $method=null, $ignore_id=null) {
         $this->fields = $fields;
         $this->method = $method;
+        $this->ignore_id = $ignore_id;
     }
 
     public function validate() {

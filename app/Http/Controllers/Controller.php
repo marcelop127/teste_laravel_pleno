@@ -57,7 +57,7 @@ class Controller extends BaseController
     protected function errorResponse($e, $type=null, $code=500) {
         $data = [
             'msg' => $this->errorMessages($type),
-            'erro' => $e->getMessage(),
+            //'erro' => $e->getMessage(),
         ];
 
         return $this->response($data, $code);
