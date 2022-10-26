@@ -65,7 +65,7 @@ class LojaController extends Controller
     public function show($id)
     {
         try {
-            $loja = Loja::findOrFail($id);
+            $loja = Loja::with('produtos')->findOrFail($id);
             
             $retorno = ['loja' => $loja];
             
