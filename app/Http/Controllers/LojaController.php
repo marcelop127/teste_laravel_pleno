@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ValidationException;
+use App\Http\Resources\LojaCollection;
+use App\Http\Resources\LojaResource;
 use App\Http\Validations\LojaValidation;
 use App\Models\Loja;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -21,9 +23,9 @@ class LojaController extends Controller
     {
         $lojas = Loja::paginate(15);
 
-        $retorno = $lojas;
+        $retorno = new LojaCollection($lojas);
 
-        return $this->response($retorno);
+        return $retorno;
     }
 
     /**
@@ -45,7 +47,7 @@ class LojaController extends Controller
 
             $retorno = [
                 'msg' => 'Objeto salvo com sucesso',
-                'loja' => $loja,
+                'loja' => new LojaResource($loja),
             ];
             
             return $this->response($retorno);
@@ -67,7 +69,7 @@ class LojaController extends Controller
         try {
             $loja = Loja::with('produtos')->findOrFail($id);
             
-            $retorno = ['loja' => $loja];
+            $retorno = ['loja' => new LojaResource($loja)];
             
             return $this->response($retorno);
         } catch (ValidationException $e) {
