@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ValidationException;
+use App\Http\Resources\ProdutoCollection;
+use App\Http\Resources\ProdutoResource;
 use App\Http\Validations\ProdutoValidation;
 use App\Models\Produto;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -21,9 +23,9 @@ class ProdutoController extends Controller
     {
         $produtos = Produto::paginate(15);
 
-        $retorno = $produtos;
-
-        return $this->response($retorno);
+        $retorno = new ProdutoCollection($produtos);
+        
+        return $retorno;
     }
 
     /**
@@ -47,7 +49,7 @@ class ProdutoController extends Controller
 
             $retorno = [
                 'msg' => 'Objeto salvo com sucesso',
-                'produto' => $produto,
+                'produto' => new ProdutoResource($produto),
             ];
             
             return $this->response($retorno);
@@ -69,9 +71,11 @@ class ProdutoController extends Controller
         try {
             $produto = Produto::findOrFail($id);
             
-            $retorno = ['produto' => $produto];
+            $retorno = ['produto' => new ProdutoResource($produto)];
             
-            return $this->response($retorno);
+            $response = $this->response($retorno);
+
+            return $response;
         } catch (ValidationException $e) {
             return $e->getResponse();
         } catch (ModelNotFoundException $e) {
