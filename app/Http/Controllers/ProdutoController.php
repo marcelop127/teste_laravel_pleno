@@ -6,10 +6,12 @@ use App\Exceptions\ValidationException;
 use App\Http\Resources\ProdutoCollection;
 use App\Http\Resources\ProdutoResource;
 use App\Http\Validations\ProdutoValidation;
+use App\Mail\ProdutoSaved;
 use App\Models\Produto;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ProdutoController extends Controller
 {
@@ -42,10 +44,13 @@ class ProdutoController extends Controller
 
             $produto = new Produto();
             $produto->loja_id =  $request->loja_id;
-            $produto->nome =  $request->nome;
-            $produto->valor =  $request->valor;
-            $produto->ativo =  $request->ativo;
+            $produto->nome = $request->nome;
+            $produto->valor = $request->valor;
+            $produto->ativo = $request->ativo;
             $produto->save();
+
+            Mail::to($produto->loja->email)
+                ->send(new ProdutoSaved($produto));
 
             $retorno = [
                 'msg' => 'Objeto salvo com sucesso',
@@ -104,6 +109,9 @@ class ProdutoController extends Controller
             $produto->valor =  $request->valor;
             $produto->ativo =  $request->ativo;
             $produto->save();
+
+            Mail::to($produto->loja->email)
+                ->send(new ProdutoSaved($produto, 'PRODUTO ATUALIZADO!'));
             
             return $this->response(['msg' => 'Objeto salvo com sucesso']);
         } catch (ValidationException $e) {
